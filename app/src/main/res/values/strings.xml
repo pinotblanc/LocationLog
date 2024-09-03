@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LocationLog</string>
+    <string name="title_map">map</string>
+    <string name="title_timeline">timeline</string>
+</resources>
