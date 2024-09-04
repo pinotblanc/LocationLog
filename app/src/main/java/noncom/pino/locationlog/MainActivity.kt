@@ -7,6 +7,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -30,8 +33,14 @@ class MainActivity: ComponentActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
-            try { setContent { LocationLogApp(db) } }
-            catch (e: Exception) { Log.d("Location", e.toString()) }
+            setContent {
+
+                Box(
+                    modifier = Modifier.safeDrawingPadding()
+                ) {
+                    LocationLogApp(db)
+                }
+            }
         }
     }
 
