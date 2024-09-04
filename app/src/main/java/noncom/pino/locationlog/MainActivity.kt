@@ -3,51 +3,41 @@ package noncom.pino.locationlog
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import noncom.pino.locationlog.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import noncom.pino.locationlog.database.LocationLogDB
 import java.util.concurrent.TimeUnit
 
 
-class MainActivity: AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
+class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // ======= window composition ==============
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        // TODO: make timeline auto update (LiveData)
+        CoroutineScope(Dispatchers.IO).launch {
 
-        val navView: BottomNavigationView = binding.navView
-
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_map, R.id.navigation_timeline
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        // =============================================
+            val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
+            try { setContent { LocationLogApp(db) } }
+            catch (e: Exception) { Log.d("Location", e.toString()) }
+        }
     }
 
     override fun onResume() {
-        super.onResume()
 
+        super.onResume()
         startTracking()
     }
 
@@ -65,7 +55,7 @@ class MainActivity: AppCompatActivity() {
             )
         }
 
-        // start periodic location fetching (15min interval)
+        // start periodic location tracking (15min interval)
         val periodicWork = PeriodicWorkRequest.Builder(LocatingWorker::class.java, 15, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this@MainActivity).enqueueUniquePeriodicWork("Location", ExistingPeriodicWorkPolicy.UPDATE, periodicWork)
     }
