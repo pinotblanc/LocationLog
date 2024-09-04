@@ -33,6 +33,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.math.min
 
 
 @Preview
@@ -105,14 +106,14 @@ fun TimelineEntry(entry: LocationLogEntry) {
 
     // convert timestamp to readable format
     val instant = Instant.ofEpochMilli(entry.timestamp)
-    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"))
-    val formatter = DateTimeFormatter.ofPattern("dd-MMM HH:mm:")
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC+2"))
+    val formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm")
     val formattedDateTime = localDateTime.format(formatter)
     // convert latitude and longitude to be accurate to approx 1m
     var latitude = entry.latitude.toString()
-    latitude = latitude.substring(0, latitude.indexOf('.')+6)
+    latitude = latitude.substring(0, min(latitude.indexOf('.')+6, latitude.length-1))
     var longitude = entry.longitude.toString()
-    longitude = longitude.substring(0, longitude.indexOf('.')+6)
+    longitude = longitude.substring(0, min(longitude.indexOf('.')+6, longitude.length-1))
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
