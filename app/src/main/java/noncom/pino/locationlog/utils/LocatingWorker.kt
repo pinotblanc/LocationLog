@@ -1,4 +1,4 @@
-package noncom.pino.locationlog
+package noncom.pino.locationlog.utils
 
 import android.annotation.SuppressLint
 import android.content.Context

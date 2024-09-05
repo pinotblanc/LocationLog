@@ -1,9 +1,7 @@
-package noncom.pino.locationlog.ui
+package noncom.pino.locationlog.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -29,6 +25,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import noncom.pino.locationlog.database.LocationLogEntry
+import noncom.pino.locationlog.ui.StateProvider
+import noncom.pino.locationlog.utils.AppState
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -38,30 +36,34 @@ import kotlin.math.min
 
 @Preview
 @Composable
-fun Timeline(@PreviewParameter(DBProvider::class) db: List<LocationLogEntry>) {
+fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
 
     Column(
         modifier = Modifier.background(Color.White).padding(8.dp).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO: dynamic alignment in TimelineHeadline() and TimelineEntryHeadline()
-        TimelineHeadline()
-        TimelineEntryHeadline()
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.drawBehind {
-                drawRoundRect(Color(0xFFD3D3D3), cornerRadius = CornerRadius(10.dp.toPx()))
-            }.padding(4.dp)
-        ) {
-            items(db) { entry -> TimelineEntry(entry) }
-        }
+        Text(text = "timeline", color = Color.Black, fontSize = 50.sp, modifier = Modifier.padding(30.dp))
+        Timeline(state)
     }
 }
 
 @Composable
-fun TimelineHeadline() { Text(text = "timeline", color = Color.Black, fontSize = 30.sp) }
+fun Timeline(@PreviewParameter(StateProvider::class) state: AppState) {
+
+    // TODO: dynamic alignment in TimelineEntryHeadline() and db table
+    TimelineEntryHeadline()
+
+    // db table
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.drawBehind {
+            drawRoundRect(Color(0xFFD3D3D3), cornerRadius = CornerRadius(10.dp.toPx()))
+        }.padding(4.dp)
+    ) {
+        items(state.db) { entry -> TimelineEntry(entry, state.settings.timezone) }
+    }
+}
 
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
@@ -102,11 +104,11 @@ fun TimelineEntryHeadline() {
 }
 
 @Composable
-fun TimelineEntry(entry: LocationLogEntry) {
+fun TimelineEntry(entry: LocationLogEntry, timezone: ZoneId) {
 
     // convert timestamp to readable format
     val instant = Instant.ofEpochMilli(entry.timestamp)
-    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC+2"))
+    val localDateTime = LocalDateTime.ofInstant(instant, timezone)
     val formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm")
     val formattedDateTime = localDateTime.format(formatter)
     // convert latitude and longitude to be accurate to approx 1m

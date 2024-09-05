@@ -52,12 +52,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.navigation.compose)
@@ -85,8 +84,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     // Integration with activities
     implementation(libs.androidx.activity.compose)
-    // Integration with ViewModels TODO: check if needed
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Integration with LiveData
     implementation(libs.androidx.runtime.livedata)
 }
