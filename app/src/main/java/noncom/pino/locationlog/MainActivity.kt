@@ -32,17 +32,18 @@ class MainActivity: ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+        lateinit var state: AppState
+
         CoroutineScope(Dispatchers.IO).launch {
 
             // TODO: make timeline auto update (Flow/ViewModel)
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
             val settings = Settings(ZoneId.of("UTC")) // not used
-            val state = AppState(db, settings)
-
-            enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
-
-            setContent { Box { MainScreen(state) } }
+            state = AppState(db, settings)
         }
+
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
+        setContent { Box { MainScreen(state) } }
     }
 
     override fun onResume() {

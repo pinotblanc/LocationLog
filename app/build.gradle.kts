@@ -17,11 +17,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "noncom.pino.locationlog"
+        applicationId = "noncom.pino.locationlog3"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

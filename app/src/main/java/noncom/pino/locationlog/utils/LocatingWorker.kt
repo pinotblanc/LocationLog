@@ -22,8 +22,8 @@ import kotlin.math.max
 
 class LocatingWorker(private val context: Context, private val workerParams: WorkerParameters): CoroutineWorker(context, workerParams) {
 
-    private lateinit var lastLocation: Location
-    private val dao = LocationLogDB.getDatabase(applicationContext).dao()
+    private lateinit var location: Location
+    private val dao = LocationLogDB.getDatabase(context).dao()
 
     // fetch location and write to disk
     @SuppressLint("MissingPermission")
@@ -36,27 +36,29 @@ class LocatingWorker(private val context: Context, private val workerParams: Wor
 
             if (task.isSuccessful && task.result != null) {
 
-                lastLocation = task.result
+                location = task.result
                 locationClient.removeLocationUpdates(locationCallback)
 
-                val entry = LocationLogEntry(System.currentTimeMillis(), lastLocation.latitude, lastLocation.longitude)
+                val entry = LocationLogEntry(System.currentTimeMillis(), location.latitude, location.longitude)
 
                 // only stores entry if location is at least delta far away
                 CoroutineScope(Dispatchers.IO).launch {
 
                     val delta = 0.00001
-                    val lastLocation = dao.getLastLocation()
-                    val diff = max(abs(lastLocation.latitude - entry.latitude), abs(lastLocation.longitude - entry.longitude))
+                    var diff = 1.0
 
-                    // TODO: switch for (diff >= delta) and test if it works
-                    if (true) {
-                        dao.insertLocation(entry)
+                    if (!dao.isEmpty()) {
+
+                        val lastLocation = dao.getLastLocation()
+                        diff = max(abs(lastLocation.latitude - entry.latitude), abs(lastLocation.longitude - entry.longitude))
+                    }
+
+                    if (diff >= delta) {
+
+                        try { dao.insertLocation(entry) } catch (e: Exception) { Log.e("Location", e.toString()) }
                         Log.d("Location", "STORED: ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
-
                     }
-                    else {
-                        Log.d("Location", "NOT STORED (diff=${diff}): ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
-                    }
+                    else { Log.d("Location", "NOT STORED (diff=${diff}): ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}") }
                 }
             }
             else { Log.d("Location", "failed to fetch location") }

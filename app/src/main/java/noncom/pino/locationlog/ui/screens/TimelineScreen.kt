@@ -40,11 +40,20 @@ import kotlin.math.min
 fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
 
     Column(
-        modifier = Modifier.background(Color.White).padding(top = 0.dp, bottom = 0.dp, start = 8.dp, end = 8.dp).fillMaxSize(),
+        modifier = Modifier.background(Color.White).padding(top = 0.dp, bottom = 0.dp, start = 8.dp, end = 8.dp).fillMaxSize(), 
         horizontalAlignment = Alignment.Start
     ) {
         TimelineHeadline()
-        Timeline(state)
+
+        if (state.db.isNotEmpty()) Timeline(state)
+        else {
+            Text(
+                text = buildAnnotatedString { withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) { append("database is empty!") } },
+                color = Color.Black,
+                fontSize = TextStyle.Default.fontSize,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
