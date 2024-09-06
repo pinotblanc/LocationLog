@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import noncom.pino.locationlog.database.LocationLogDB
 import noncom.pino.locationlog.database.LocationLogEntry
 import java.sql.Timestamp
+import kotlin.math.abs
+import kotlin.math.max
 
 
 class LocatingWorker(private val context: Context, private val workerParams: WorkerParameters): CoroutineWorker(context, workerParams) {
@@ -39,10 +41,23 @@ class LocatingWorker(private val context: Context, private val workerParams: Wor
 
                 val entry = LocationLogEntry(System.currentTimeMillis(), lastLocation.latitude, lastLocation.longitude)
 
-                Log.d("Location", "${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
+                // only stores entry if location is at least delta far away
+                CoroutineScope(Dispatchers.IO).launch {
 
-                // TODO: check whether last location is within some delta value
-                CoroutineScope(Dispatchers.IO).launch { try { dao.insertLocation(entry) } catch(e: Exception) { Log.d("Location", e.toString()) } }
+                    val delta = 0.00001
+                    val lastLocation = dao.getLastLocation()
+                    val diff = max(abs(lastLocation.latitude - entry.latitude), abs(lastLocation.longitude - entry.longitude))
+
+                    // TODO: switch for (diff >= delta) and test if it works
+                    if (true) {
+                        dao.insertLocation(entry)
+                        Log.d("Location", "STORED: ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
+
+                    }
+                    else {
+                        Log.d("Location", "NOT STORED (diff=${diff}): ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
+                    }
+                }
             }
             else { Log.d("Location", "failed to fetch location") }
         }

@@ -25,7 +25,7 @@ fun SettingsScreen(@PreviewParameter(StateProvider::class) state: AppState) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "timezone: ${state.settings.timezone}",
+            text = "settings go here",
             color = Color.Black,
             fontSize = TextStyle.Default.fontSize,
             fontWeight = FontWeight.Bold

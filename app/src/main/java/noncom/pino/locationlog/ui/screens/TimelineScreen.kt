@@ -1,13 +1,12 @@
 package noncom.pino.locationlog.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -18,7 +17,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -29,8 +30,8 @@ import noncom.pino.locationlog.ui.StateProvider
 import noncom.pino.locationlog.utils.AppState
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 import kotlin.math.min
 
 
@@ -39,10 +40,10 @@ import kotlin.math.min
 fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
 
     Column(
-        modifier = Modifier.background(Color.White).padding(8.dp).fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.background(Color.White).padding(top = 0.dp, bottom = 0.dp, start = 8.dp, end = 8.dp).fillMaxSize(),
+        horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "timeline", color = Color.Black, fontSize = 50.sp, modifier = Modifier.padding(30.dp))
+        TimelineHeadline()
         Timeline(state)
     }
 }
@@ -50,65 +51,35 @@ fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
 @Composable
 fun Timeline(@PreviewParameter(StateProvider::class) state: AppState) {
 
-    // TODO: dynamic alignment in TimelineEntryHeadline() and db table
-    TimelineEntryHeadline()
-
     // db table
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.drawBehind {
-            drawRoundRect(Color(0xFFD3D3D3), cornerRadius = CornerRadius(10.dp.toPx()))
-        }.padding(4.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(state.db) { entry -> TimelineEntry(entry, state.settings.timezone) }
-    }
-}
-
-@SuppressLint("UnrememberedMutableInteractionSource")
-@Composable
-fun TimelineEntryHeadline() {
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(2.dp)
-    ) {
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(100.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append("timestamp")
-                }
-            }
-        )
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(70.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append("latitude")
-                }
-            }
-        )
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(70.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append("longitude")
-                }
-            }
-        )
+        items(state.db) { entry -> TimelineEntry(entry) }
+        item { Row(modifier = Modifier.height(8.dp)) {} }
     }
 }
 
 @Composable
-fun TimelineEntry(entry: LocationLogEntry, timezone: ZoneId) {
+fun TimelineHeadline() {
+
+    Text(
+        text = "timeline",
+        color = Color.Black,
+        fontSize = 50.sp,
+        fontWeight = FontWeight.Normal,
+        modifier = Modifier.padding(top = 50.dp, bottom = 15.dp, start = 0.dp, end = 0.dp)
+    )
+}
+
+@Composable
+fun TimelineEntry(entry: LocationLogEntry) {
 
     // convert timestamp to readable format
     val instant = Instant.ofEpochMilli(entry.timestamp)
-    val localDateTime = LocalDateTime.ofInstant(instant, timezone)
+    val localDateTime = LocalDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId())
     val formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm")
     val formattedDateTime = localDateTime.format(formatter)
     // convert latitude and longitude to be accurate to approx 1m
@@ -118,37 +89,28 @@ fun TimelineEntry(entry: LocationLogEntry, timezone: ZoneId) {
     longitude = longitude.substring(0, min(longitude.indexOf('.')+6, longitude.length-1))
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.drawBehind {
-            drawRoundRect(Color(0xFFE5E4E2), cornerRadius = CornerRadius(10.dp.toPx()))
-        }.padding(4.dp)
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .drawBehind {
+                drawRoundRect(Color( 0xfff4f4f4 ), cornerRadius = CornerRadius(10.dp.toPx()))
+            }
+            .padding(4.dp)
+            .height(30.dp)
+            .fillMaxSize()
     ) {
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(100.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append(formattedDateTime)
-                }
-            }
+        Text(
+            text = buildAnnotatedString { withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) { append(formattedDateTime) } },
+            color = Color.Black,
+            fontSize = TextStyle.Default.fontSize,
+            fontWeight = FontWeight.Medium
         )
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(70.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append(latitude)
-                }
-            }
+        Text(
+            text = buildAnnotatedString { withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) { append("$latitude : $longitude") } },
+            color = Color.Black,
+            fontSize = TextStyle.Default.fontSize,
+            fontWeight = FontWeight.Medium
         )
-        Text(modifier = Modifier
-            .padding(1.dp)
-            .size(70.dp, 18.dp),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontFeatureSettings = "tnum")) {
-                    append(longitude)
-                }
-            }
-        )
+
     }
 }

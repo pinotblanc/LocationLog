@@ -5,5 +5,5 @@ import java.time.ZoneId
 class Settings(
     timezone: ZoneId
 ) {
-    val timezone = timezone
+    val timezone = timezone // not used
 }

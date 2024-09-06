@@ -2,13 +2,13 @@ package noncom.pino.locationlog
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -18,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import noncom.pino.locationlog.database.LocationLogDB
-import noncom.pino.locationlog.ui.screens.BottomBarScreen
 import noncom.pino.locationlog.ui.screens.MainScreen
 import noncom.pino.locationlog.utils.AppState
 import noncom.pino.locationlog.utils.LocatingWorker
@@ -32,25 +31,17 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            // TODO: make timeline auto update (LiveData)
+            // TODO: make timeline auto update (Flow/ViewModel)
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
-            // TODO: make selection not hard coded
-            val settings = Settings(ZoneId.of("UTC+2"))
+            val settings = Settings(ZoneId.of("UTC")) // not used
             val state = AppState(db, settings)
 
-            setContent {
+            enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
 
-                Box(
-                    modifier = Modifier.safeDrawingPadding()
-                ) {
-                    // TODO: create top bar (to cover notches -> WindowInsets or Scaffold)
-                    MainScreen(state)
-                }
-            }
+            setContent { Box { MainScreen(state) } }
         }
     }
 
