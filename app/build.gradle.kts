@@ -17,7 +17,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "noncom.pino.locationlog3"
+        applicationId = "noncom.pino.locationlog"
         minSdk = 29
         targetSdk = 34
         versionCode = 2
