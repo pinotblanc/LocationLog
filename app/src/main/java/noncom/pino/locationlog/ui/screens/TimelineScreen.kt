@@ -75,7 +75,7 @@ fun Timeline(@PreviewParameter(StateProvider::class) state: AppState) {
 fun TimelineHeadline() {
 
     Text(
-        text = "timeline",
+        text = "Timeline",
         color = Color.Black,
         fontSize = 50.sp,
         fontWeight = FontWeight.Normal,

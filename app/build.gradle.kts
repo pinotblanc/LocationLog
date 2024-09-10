@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ktx)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.gradle.secrets)
 }
 
 repositories {
@@ -20,8 +21,8 @@ android {
         applicationId = "noncom.pino.locationlog"
         minSdk = 29
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,6 +61,7 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +88,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     // Integration with LiveData
     implementation(libs.androidx.runtime.livedata)
+
+    implementation(libs.maps.compose)
 }

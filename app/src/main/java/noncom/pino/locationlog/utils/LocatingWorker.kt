@@ -23,10 +23,9 @@ import kotlin.math.max
 
 class LocatingWorker(private val context: Context, private val workerParams: WorkerParameters): CoroutineWorker(context, workerParams) {
 
-    private lateinit var location: Location
     private val dao = LocationLogDB.getDatabase(context).dao()
 
-    // fetch location and write to disk
+    // fetch location and write to database
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
 
@@ -37,39 +36,45 @@ class LocatingWorker(private val context: Context, private val workerParams: Wor
 
             if (task.isSuccessful && task.result != null) {
 
-                location = task.result
+                val receivedLocation: Location = task.result
                 locationClient.removeLocationUpdates(locationCallback)
 
-                val entry = LocationLogEntry(System.currentTimeMillis(), location.latitude, location.longitude)
-
-                // only stores entry if location is at least delta far away
-                CoroutineScope(Dispatchers.IO).launch {
-
-                    // TODO debug
-                    DebugDB.getDatabase(context).dao().insertLocation(entry)
-
-                    val delta = 0.0002 // = approx 20m
-                    var diff = 1.0
-
-                    if (!dao.isEmpty()) {
-
-                        val lastLocation = dao.getLastLocation()
-                        diff = max(abs(lastLocation.latitude - entry.latitude), abs(lastLocation.longitude - entry.longitude))
-                    }
-
-                    if (diff >= delta) {
-
-                        try { dao.insertLocation(entry) } catch (e: Exception) { Log.e("Location", e.toString()) }
-                        Log.d("Location", "STORED: ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
-                    }
-                    else { Log.d("Location", "NOT STORED (diff=${diff}): ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}") }
-                }
+                saveData(receivedLocation)
             }
             else { Log.d("Location", "failed to fetch location") }
         }
+
+        // fetches location and writes applicable data to database
         try { locationClient.lastLocation.addOnCompleteListener(listener) }
         catch (e: SecurityException) { Log.e("Location", "lost location permission") }
 
         return Result.success()
+    }
+
+    private fun saveData(location: Location) {
+
+        val entry = LocationLogEntry(System.currentTimeMillis(), location.latitude, location.longitude)
+
+        // only stores entry if location is at least delta far away
+        CoroutineScope(Dispatchers.IO).launch {
+
+            DebugDB.getDatabase(context).dao().insertLocation(entry) // TODO debug
+
+            val delta = 0.0002 // = approx 20m
+            var diff = 1.0
+
+            if (!dao.isEmpty()) {
+
+                val lastLocation = dao.getLastLocation()
+                diff = max(abs(lastLocation.latitude - entry.latitude), abs(lastLocation.longitude - entry.longitude))
+            }
+
+            if (diff >= delta) {
+
+                try { dao.insertLocation(entry) } catch (e: Exception) { Log.e("Location", e.toString()) }
+                Log.d("Location", "STORED: ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}")
+            }
+            else { Log.d("Location", "NOT STORED (diff=${diff}): ${entry.latitude} : ${entry.longitude} at ${Timestamp(entry.timestamp)}") }
+        }
     }
 }

@@ -36,11 +36,18 @@ fun SettingsScreen(@PreviewParameter(StateProvider::class) state: AppState) {
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "debug",
+            text = "Debug",
             color = Color.Black,
             fontSize = 50.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(top = 50.dp, bottom = 15.dp, start = 0.dp, end = 0.dp)
+        )
+        Text(
+            text = "this has all received data, while the normal database (timeline) only gathers unique data points",
+            color = Color.Black,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(top = 0.dp, bottom = 15.dp, start = 0.dp, end = 0.dp)
         )
         if (state.debug.isNotEmpty()) {
 

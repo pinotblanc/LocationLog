@@ -38,6 +38,7 @@ class MainActivity: ComponentActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             // TODO: make timeline auto update (Flow/ViewModel)
+            // TODO: check whether lists are lazy
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
             val debug = DebugDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
             val settings = Settings(ZoneId.of("UTC")) // not used
