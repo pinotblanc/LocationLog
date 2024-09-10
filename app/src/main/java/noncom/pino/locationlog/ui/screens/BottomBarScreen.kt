@@ -23,7 +23,7 @@ sealed class BottomBarScreen(
     )
     data object Settings: BottomBarScreen(
         route = "settings",
-        title = "Settings",
+        title = "debug",
         icon = Icons.Default.Settings
     )
 }

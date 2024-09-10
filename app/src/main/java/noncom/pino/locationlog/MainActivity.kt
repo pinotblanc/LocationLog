@@ -17,6 +17,7 @@ import androidx.work.WorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import noncom.pino.locationlog.database.DebugDB
 import noncom.pino.locationlog.database.LocationLogDB
 import noncom.pino.locationlog.ui.screens.MainScreen
 import noncom.pino.locationlog.utils.AppState
@@ -38,8 +39,9 @@ class MainActivity: ComponentActivity() {
 
             // TODO: make timeline auto update (Flow/ViewModel)
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
+            val debug = DebugDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
             val settings = Settings(ZoneId.of("UTC")) // not used
-            state = AppState(db, settings)
+            state = AppState(db, debug, settings)
         }
 
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))

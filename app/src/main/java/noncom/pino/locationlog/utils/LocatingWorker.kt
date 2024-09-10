@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import noncom.pino.locationlog.database.DebugDB
 import noncom.pino.locationlog.database.LocationLogDB
 import noncom.pino.locationlog.database.LocationLogEntry
 import java.sql.Timestamp
@@ -44,7 +45,10 @@ class LocatingWorker(private val context: Context, private val workerParams: Wor
                 // only stores entry if location is at least delta far away
                 CoroutineScope(Dispatchers.IO).launch {
 
-                    val delta = 0.00001
+                    // TODO debug
+                    DebugDB.getDatabase(context).dao().insertLocation(entry)
+
+                    val delta = 0.0002 // = approx 20m
                     var diff = 1.0
 
                     if (!dao.isEmpty()) {
