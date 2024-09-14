@@ -11,34 +11,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import noncom.pino.locationlog.database.LocationLogEntry
-import noncom.pino.locationlog.ui.StateProvider
 import noncom.pino.locationlog.utils.AppState
 
-@Preview
 @Composable
-fun MapScreen(@PreviewParameter(StateProvider::class) state: AppState) {
+fun MapScreen(state: AppState) {
 
     Column(
-        modifier = Modifier.background(Color.White).fillMaxSize(),
+        modifier = Modifier.padding(top = 50.dp, bottom = 0.dp, start = 0.dp, end = 0.dp).fillMaxSize(),
         horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            text = "Map",
-            color = Color.Black,
-            fontSize = 50.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(top = 50.dp, bottom = 15.dp, start = 8.dp, end = 0.dp)
-        )
+        MapHeadline()
         Map(state.db)
     }
+}
+
+@Composable
+fun MapHeadline() {
+
+    Text(
+        text = "Map",
+        color = Color.Black,
+        fontSize = 50.sp,
+        fontWeight = FontWeight.Normal,
+        modifier = Modifier.padding(top = 0.dp, bottom = 15.dp, start = 8.dp, end = 0.dp)
+    )
 }
 
 @Composable

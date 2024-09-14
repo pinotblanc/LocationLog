@@ -1,6 +1,5 @@
 package noncom.pino.locationlog.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,12 +20,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import noncom.pino.locationlog.database.LocationLogEntry
-import noncom.pino.locationlog.ui.StateProvider
 import noncom.pino.locationlog.utils.AppState
 import java.time.Instant
 import java.time.LocalDateTime
@@ -35,12 +31,11 @@ import java.util.TimeZone
 import kotlin.math.min
 
 
-@Preview
 @Composable
-fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
+fun TimelineScreen(state: AppState) {
 
     Column(
-        modifier = Modifier.background(Color.White).padding(top = 0.dp, bottom = 0.dp, start = 8.dp, end = 8.dp).fillMaxSize(), 
+        modifier = Modifier.padding(top = 50.dp, bottom = 0.dp, start = 16.dp, end = 16.dp).fillMaxSize(),
         horizontalAlignment = Alignment.Start
     ) {
         TimelineHeadline()
@@ -58,13 +53,13 @@ fun TimelineScreen(@PreviewParameter(StateProvider::class) state: AppState) {
 }
 
 @Composable
-fun Timeline(@PreviewParameter(StateProvider::class) state: AppState) {
+fun Timeline(state: AppState) {
 
     // db table
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.padding(top = 0.dp, bottom = 0.dp, start = 8.dp, end = 8.dp).fillMaxSize()
     ) {
         items(state.db) { entry -> TimelineEntry(entry) }
         item { Row(modifier = Modifier.height(8.dp)) {} }
@@ -79,7 +74,7 @@ fun TimelineHeadline() {
         color = Color.Black,
         fontSize = 50.sp,
         fontWeight = FontWeight.Normal,
-        modifier = Modifier.padding(top = 50.dp, bottom = 15.dp, start = 0.dp, end = 0.dp)
+        modifier = Modifier.padding(top = 0.dp, bottom = 15.dp, start = 0.dp, end = 0.dp)
     )
 }
 
@@ -102,7 +97,7 @@ fun TimelineEntry(entry: LocationLogEntry) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .drawBehind {
-                drawRoundRect(Color( 0xfff4f4f4 ), cornerRadius = CornerRadius(10.dp.toPx()))
+                drawRoundRect(Color(0xFFE8E8E8), cornerRadius = CornerRadius(10.dp.toPx()))
             }
             .padding(4.dp)
             .height(30.dp)

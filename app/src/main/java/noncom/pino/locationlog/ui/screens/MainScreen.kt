@@ -11,20 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import noncom.pino.locationlog.ui.BottomNavGraph
-import noncom.pino.locationlog.ui.StateProvider
 import noncom.pino.locationlog.utils.AppState
 
 
-@Preview
 @Composable
-fun MainScreen(@PreviewParameter(StateProvider::class) state: AppState) {
+fun MainScreen(state: AppState) {
 
     val navController = rememberNavController()
 

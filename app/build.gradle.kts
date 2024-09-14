@@ -21,8 +21,8 @@ android {
         applicationId = "noncom.pino.locationlog"
         minSdk = 29
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,7 +66,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // google play services location (fused location provider)
+    // google play services location (FusedLocationProvider and ActivityRecognitionClient)
     implementation(libs.play.services.location)
 
     // work manager
