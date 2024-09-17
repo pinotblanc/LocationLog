@@ -1,6 +1,5 @@
 package noncom.pino.locationlog.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,16 +17,23 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import noncom.pino.locationlog.database.LocationLogEntry
 import noncom.pino.locationlog.utils.AppState
+import noncom.pino.locationlog.utils.Timeframe
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
 @Composable
 fun MapScreen(state: AppState) {
 
     Column(
-        modifier = Modifier.padding(top = 50.dp, bottom = 0.dp, start = 0.dp, end = 0.dp).fillMaxSize(),
+        modifier = Modifier
+            .padding(top = 50.dp, bottom = 0.dp, start = 0.dp, end = 0.dp)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.Start
     ) {
         MapHeadline()
-        Map(state.db)
+        Map(state)
     }
 }
 
@@ -44,15 +50,15 @@ fun MapHeadline() {
 }
 
 @Composable
-fun Map(db: List<LocationLogEntry>) {
+fun Map(state: AppState) {
 
     val mapProperties = MapProperties(isMyLocationEnabled = true)
     var cameraPositionState = rememberCameraPositionState()
 
-    if (db.isNotEmpty()) {
+    if (state.db.isNotEmpty()) {
 
         cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(LatLng(db[0].latitude, db[0].longitude), 15f)
+            position = CameraPosition.fromLatLngZoom(LatLng(state.db[0].latitude, state.db[0].longitude), 15f)
         }
     }
 
@@ -63,10 +69,32 @@ fun Map(db: List<LocationLogEntry>) {
         uiSettings = MapUiSettings(zoomControlsEnabled = false, indoorLevelPickerEnabled = false),
         contentPadding = PaddingValues(bottom = 2000000000.dp) // so water mark is off screen
     ) {
-        if (db.isNotEmpty()) {
+        if (state.db.isNotEmpty()) {
 
+            var entries = mutableListOf<LocationLogEntry>()
+
+            // fill entries list depending on setting
+            if (state.settings.timeframe == Timeframe.ALL) { entries = state.db.toMutableList() }
+
+            else if (state.settings.timeframe == Timeframe.TODAY) {
+
+                // get formater and todays date
+                val instant = Instant.ofEpochMilli(System.currentTimeMillis())
+                val localDateTime = LocalDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId())
+                val formatter = DateTimeFormatter.ofPattern("MMM dd")
+                val today = localDateTime.format(formatter)
+
+                for (entry in state.db) {
+
+                    if(today != LocalDateTime.ofInstant(Instant.ofEpochMilli(entry.timestamp), TimeZone.getDefault().toZoneId()).format(formatter)) break
+                    entries.add(entry)
+                }
+            }
+            // TODO other cases
+
+            // actual line with the selected data
             Polyline(
-                points = db.map { entry -> LatLng(entry.latitude, entry.longitude) },
+                points = entries.map { entry -> LatLng(entry.latitude, entry.longitude) },
                 clickable = true,
                 color = Color.Blue,
                 width = 10f

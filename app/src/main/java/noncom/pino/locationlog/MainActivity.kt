@@ -15,7 +15,7 @@ import noncom.pino.locationlog.ui.screens.MainScreen
 import noncom.pino.locationlog.utils.ActivityListenerService
 import noncom.pino.locationlog.utils.AppState
 import noncom.pino.locationlog.utils.Settings
-import java.time.ZoneId
+import noncom.pino.locationlog.utils.Timeframe
 
 
 class MainActivity: ComponentActivity() {
@@ -35,7 +35,7 @@ class MainActivity: ComponentActivity() {
             // TODO: make timeline auto update (Flow/ViewModel)
             // TODO: check whether lists are lazy
             val db = LocationLogDB.getDatabase(applicationContext).dao().getLocationsNewestFirst()
-            val settings = Settings(ZoneId.of("UTC")) // not used
+            val settings = Settings(Timeframe.ALL) // TODO make persistent
             state = AppState(db, settings, applicationContext)
         }
 

@@ -1,9 +1,9 @@
 package noncom.pino.locationlog.utils
 
-import java.time.ZoneId
 
-class Settings(
-    timezone: ZoneId
-) {
-    val timezone = timezone // not used
+class Settings(timeframe: Timeframe) {
+
+    var timeframe = timeframe
 }
+
+enum class Timeframe { TODAY, YESTERDAY, LAST_3DAYS, LAST_5DAYS, LAST_WEEK, ALL }
